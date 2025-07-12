@@ -13,3 +13,4 @@ class BatchPredictReq(BaseModel):
 
 class BatchPredictRes(BaseModel):
     predictions: List[PredictRes]
+

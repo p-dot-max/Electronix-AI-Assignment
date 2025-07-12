@@ -1,1 +1,18 @@
-FROM:
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/model:/app/model
+    environment:
+      - PYTHONUNBUFFERED=1
+      - QUANTIZE=true
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

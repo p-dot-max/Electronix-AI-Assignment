@@ -3,15 +3,15 @@ Fast API Implementation
 '''
 
 from fastapi import FastAPI
-from app.schema import PredictReq, PredicRes
+from app.schema import PredictReq, PredictRes, BatchPredictReq, BatchPredictRes
 from app.model import BinarySentimentModel
-from app.utils import set_seed
+from app.utils import seeding
 from fastapi.middleware.cors import CORSMiddleware
 import time
 
 app = FastAPI()
 
-# CORS 
+# CORS connection
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,7 +22,7 @@ app.add_middleware(
 
 
 model = BinarySentimentModel()
-set_seed()
+seeding()
 
 
 @app.post("/predict", response_model=PredictRes)

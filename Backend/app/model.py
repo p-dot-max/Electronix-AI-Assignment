@@ -7,10 +7,14 @@ from watchdog.events import FileSystemEventHandler
 class BinarySentimentModel:
     def __init__(self, model_dir="model", model_name="distilbert-base-uncased"):
         self.device = torch.device("cpu")
-        self.tokenizer = AutoTokenizer.from_pretrained(model_dir if os.path.exists(model_dir) else model_name)
+        # Create model directory if it doesn't exist
+        os.makedirs(model_dir, exist_ok=True)
+        # Check if fine-tuned model exists by looking for config.json
+        model_path = model_dir if os.path.exists(os.path.join(model_dir, "config.json")) else model_name
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         quantization_config = {"load_in_8bit": True} if os.getenv("QUANTIZE", "false") == "true" else None
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            model_dir if os.path.exists(model_dir) else model_name,
+            model_path,
             num_labels=2,
             quantization_config=quantization_config
         ).to(self.device)

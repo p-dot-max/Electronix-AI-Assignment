@@ -86,16 +86,3 @@ query {
   }
 }
 ```
-
-## Deployment
-
-- **Frontend**: Deployed on Vercel (`https://<your-vercel-url>`).
-- **Backend**: Deployed on Render (`https://<your-render-url>`).
-- **Video Demo**: [YouTube Link](https://youtu.be/<your-video-id>) (under 3 minutes, showing build, API, and frontend).
-
-## Optional Enhancements
-
-- **Quantization**: 8-bit quantization reduces memory usage and inference time.
-- **Async Batching**: `/predict_batch` endpoint for higher throughput.
-- **GitHub Actions**: CI workflow builds Docker images and runs tests on push.
-- **Frontend Extras**: Dark-mode toggle and live typing inference via GraphQL polling.
