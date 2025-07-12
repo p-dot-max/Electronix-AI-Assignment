@@ -1,7 +1,10 @@
-fastapi
+fastapi[standard]
 uvicorn
-torch 
-transformers[torch]
-
-
+torch
+transformers
+pydantic
+datasets
+strawberry-graphql
+watchdog
+bitsandbytes
 
