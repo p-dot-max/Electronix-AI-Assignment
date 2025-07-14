@@ -77,12 +77,4 @@ This project implements a fine-tuned sentiment analysis model using a Large Lang
   }
   ```
 
-### GraphQL
-```graphql
-query {
-  predict(text: "I love this!") {
-    label
-    score
-  }
-}
-```
+
