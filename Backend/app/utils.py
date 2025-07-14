@@ -12,7 +12,6 @@ class seeding:
         random.seed(self.seed)
         np.random.seed(self.seed)
         torch.manual_seed(self.seed)
-        torch.cuda.manual_seed_all(self.seed)
 
 
 

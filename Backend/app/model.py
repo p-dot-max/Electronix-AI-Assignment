@@ -10,7 +10,9 @@ class BinarySentimentModel:
         # Create model directory if it doesn't exist
         os.makedirs(model_dir, exist_ok=True)
         # Check if fine-tuned model exists by looking for config.json
+        
         model_path = model_dir if os.path.exists(os.path.join(model_dir, "config.json")) else model_name
+        
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
 
         # quantization_config = {"load_in_8bit": True} if os.getenv("QUANTIZE", "false") == "true" else None
@@ -23,7 +25,7 @@ class BinarySentimentModel:
 
         self.model.eval()
         
-        # Hot-reload model weights
+        # Hot-reload model weights (file system observer))
         observer = Observer()
         observer.schedule(ModelReloadHandler(self), path=model_dir, recursive=False)
         observer.start()

@@ -8,11 +8,12 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, get_
 from torch.optim import AdamW
 import random
 import json
+import sys
 
 # Defaults
 MODEL_NAME = "distilbert-base-uncased"
 DATA_PATH = "data/train.jsonl"
-SAVE_DIR = "model"
+SAVE_DIR = "Backend/model"
 BATCH_SIZE = 8
 EPOCHS = 10
 LR = 3e-5
@@ -82,7 +83,6 @@ def main(args):
         num_training_steps=args.epochs * len(dataloader)
     )
 
-    # Training loop
     start_time = time.time()
     model.train()
     for epoch in range(args.epochs):
@@ -111,12 +111,22 @@ def main(args):
 
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
+
     parser.add_argument('--data', type=str, default=DATA_PATH, help='data.jsonl path')
     parser.add_argument('--epochs', type=int, default=EPOCHS, help='total training epochs')
     parser.add_argument('--lr', type=float, default=LR, help='learning rate')
+
+    # parser.add_argument('--seed', type=int, default=0, help='Global training seed')
+
+
+    if '--help' in sys.argv or '-h' in sys.argv:
+        parser.print_help()
+        sys.exit()
+    
     return parser.parse_known_args()[0] if known else parser.parse_args()
 
 def run(**kwargs):
+    # Usage: import train; train.run(data='train.jsonl')
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)
