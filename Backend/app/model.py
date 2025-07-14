@@ -12,12 +12,15 @@ class BinarySentimentModel:
         # Check if fine-tuned model exists by looking for config.json
         model_path = model_dir if os.path.exists(os.path.join(model_dir, "config.json")) else model_name
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        quantization_config = {"load_in_8bit": True} if os.getenv("QUANTIZE", "false") == "true" else None
+
+        # quantization_config = {"load_in_8bit": True} if os.getenv("QUANTIZE", "false") == "true" else None
+        
         self.model = AutoModelForSequenceClassification.from_pretrained(
             model_path,
             num_labels=2,
-            quantization_config=quantization_config
+            # quantization_config=quantization_config
         ).to(self.device)
+
         self.model.eval()
         
         # Hot-reload model weights

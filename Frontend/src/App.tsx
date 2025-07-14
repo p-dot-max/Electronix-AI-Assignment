@@ -1,30 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, gql } from '@apollo/client';
-
-const PREDICT_QUERY = gql`
-  query Predict($text: String!) {
-    predict(text: $text) {
-      label
-      score
-    }
-  }
-`;
 
 const App: React.FC = () => {
   const [text, setText] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-  const { data, loading, error, refetch } = useQuery(PREDICT_QUERY, {
-    variables: { text },
-    skip: !text,
-    pollInterval: 1000, // Live typing inference
-  });
+  const [result, setResult] = useState<{ label: string; score: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     document.body.className = darkMode ? 'dark' : '';
   }, [darkMode]);
 
-  const handleSubmit = () => {
-    refetch();
+  const handleSubmit = async () => {
+    if (!text.trim()) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await fetch('http://localhost:8000/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server responded with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      setResult({ label: data.label, score: data.score });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,11 +63,11 @@ const App: React.FC = () => {
         >
           Analyze
         </button>
-        {loading && <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>}
-        {error && <p className="mt-4 text-red-500 dark:text-red-400">Error: {error.message}</p>}
-        {data && (
+        {loading && <p className="mt-4 text-gray-600 dark:text-gray-400">Analyzing...</p>}
+        {error && <p className="mt-4 text-red-500 dark:text-red-400">Error: {error}</p>}
+        {result && (
           <p className="mt-4 text-gray-800 dark:text-gray-200">
-            Sentiment: {data.predict.label} (Score: {data.predict.score.toFixed(2)})
+            Sentiment: {result.label} (Score: {result.score.toFixed(2)})
           </p>
         )}
       </div>
