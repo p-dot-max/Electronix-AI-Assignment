@@ -27,25 +27,36 @@ def setup_seeds(seed: int):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+    
+    # raising errors if non-deterministic ops
     torch.use_deterministic_algorithms(True)
 
+'''
+{"text": "I love this movie!", "label": "positive"}
+{"text": "This is terrible.", "label": "negative"}
+label2id = {"negative": 0, "positive": 1}
+'''
 class JsonlDataset(Dataset):
     def __init__(self, filepath, tokenizer, label2id, max_len=128):
         self.data = []
+
         with open(filepath, "r") as f:
             for line in f:
                 entry = json.loads(line)
                 self.data.append(entry)
+
         self.tokenizer = tokenizer
         self.label2id = label2id
         self.max_len = max_len
 
+    # number of data
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
         text = self.data[idx]["text"]
         label = self.label2id[self.data[idx]["label"]]
+
         enc = self.tokenizer(
             text, truncation=True, padding="max_length",
             max_length=self.max_len, return_tensors="pt"
@@ -62,6 +73,8 @@ def main(args):
     # Initialize tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     quantization_config = {"load_in_8bit": True} if os.getenv("QUANTIZE", "false") == "true" else None
+
+
     model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_NAME,
         num_labels=NUM_LABELS,
@@ -70,12 +83,13 @@ def main(args):
         quantization_config=quantization_config
     ).to(DEVICE)
 
-    # Dataset
+
     dataset = JsonlDataset(args.data, tokenizer, {"negative": 0, "positive": 1}, max_len=MAX_LEN)
     dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
     # Optimizer & Scheduler
     optimizer = AdamW(model.parameters(), lr=args.lr)
+    
     lr_scheduler = get_scheduler(
         "linear",
         optimizer=optimizer,

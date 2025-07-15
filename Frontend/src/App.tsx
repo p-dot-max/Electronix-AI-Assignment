@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-const App: React.FC = () => {
+function App() {
+
   const [text, setText] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [result, setResult] = useState<{ label: string; score: number } | null>(null);
@@ -12,6 +13,7 @@ const App: React.FC = () => {
   }, [darkMode]);
 
   const handleSubmit = async () => {
+    
     if (!text.trim()) return;
     setLoading(true);
     setError(null);

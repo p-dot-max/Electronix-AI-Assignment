@@ -15,12 +15,9 @@ class BinarySentimentModel:
         
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-        # quantization_config = {"load_in_8bit": True} if os.getenv("QUANTIZE", "false") == "true" else None
-        
         self.model = AutoModelForSequenceClassification.from_pretrained(
             model_path,
             num_labels=2,
-            # quantization_config=quantization_config
         ).to(self.device)
 
         self.model.eval()

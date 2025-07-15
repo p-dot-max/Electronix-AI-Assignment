@@ -24,7 +24,7 @@ app.add_middleware(
 model = BinarySentimentModel()
 seeding()
 
-
+# label, score and inference
 @app.post("/predict", response_model=PredictRes)
 async def predict(payload: PredictReq):
     start_time = time.time()
@@ -32,6 +32,7 @@ async def predict(payload: PredictReq):
     result["inference_time"] = time.time() - start_time
     return result
 
+# predictions with total processing time
 @app.post("/predict_batch", response_model=BatchPredictRes)
 async def predict_batch(payload: BatchPredictReq):
     start_time = time.time()
