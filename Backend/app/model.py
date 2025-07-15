@@ -29,8 +29,10 @@ class BinarySentimentModel:
 
     def predict(self, text: str):
         inputs = self.tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=128).to(self.device)
+        
         with torch.no_grad():
             outputs = self.model(**inputs)
+
         logits = outputs.logits
         probs = torch.nn.functional.softmax(logits, dim=-1)
         score = probs[0][1].item()  # Probability of positive class
